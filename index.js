@@ -3,9 +3,17 @@ const app = express();
 const fs = require("fs");
 const cors = require("cors");
 const bot = require("./bot");
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 
 app.get("/data", (req, res) => {
     fs.readFile("data.json", (err, data) => {
@@ -45,4 +53,5 @@ app.post("/attend", async (req, res) => {
     res.send();
 });
 
-app.listen(5000, console.log("listening"));
+app.listen(8000, console.log("listening"));
+bot.joinClass();

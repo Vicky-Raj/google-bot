@@ -6,7 +6,7 @@ puppeteer.use(StealthPlugin());
 class GoogleClassBot {
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -18,7 +18,7 @@ class GoogleClassBot {
     }
 
     async attend(page) {
-        await page.type("textarea[name=chatTextInput]", "248 present mam", {
+        await page.type("textarea[name=chatTextInput]", "248 present", {
             delay: 0,
         });
         await page.keyboard.press("Enter");
@@ -90,19 +90,19 @@ class GoogleClassBot {
         let told = false;
         return setInterval(async () => {
             if (!told) {
-                let list = await page.$$("div[data-message-text]");
+                let messages = await page.$$("div[data-message-text]");
                 const reg = new RegExp("[2]?([4-5])([0-9]) present", "i");
-                for (const value of list) {
+                for (const message of messages) {
                     const text = await page.evaluate(
                         (el) => el.innerText,
-                        value
+                        message
                     );
                     if (reg.test(text)) {
                         const delay = Number(reg.exec(text)[2]);
                         const safe = Number(reg.exec(text)[1]);
                         setTimeout(
                             this.attend,
-                            (8 - delay) * (5 - safe) * 5000,
+                            (8 - delay) * (5 - safe) * 8000,
                             page
                         );
                         told = true;

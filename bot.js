@@ -14,16 +14,14 @@ const PASS = "passwordvi";
 
 
 const getClass = () => {
-    // const date = new Date();
-    // const timeTable = JSON.parse(fs.readFileSync("data.json")).timeTable;
-    // try {
-    //     const cls = timeTable[date.getDay()-1][date.getHours()];
-    //     return  cls === "none" ? undefined : cls;
-    // } catch (e) {
-    //     return undefined;
-    // }
-    return "https://meet.google.com/nnm-ibtx-eqh"
-
+    const date = new Date();
+    const timeTable = JSON.parse(fs.readFileSync("data.json")).timeTable;
+    try {
+        const cls = timeTable[date.getDay()-1][date.getHours()];
+        return  cls === "none" ? undefined : cls;
+    } catch (e) {
+        return undefined;
+    }
 };
 
 const leaveClass = async () => {
