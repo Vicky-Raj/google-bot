@@ -4,6 +4,9 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 let told = false;
 class GoogleClassBot {
+    constructor(){
+        this.told = false;
+    }
     async createBrowser() {
         const browser = await puppeteer.launch({
             headless: false,
@@ -18,12 +21,12 @@ class GoogleClassBot {
     }
 
     async attend(page) {
-        if(!told){
+        if(!this.told){
         await page.type("textarea[name=chatTextInput]", "248 present", {
             delay: 0,
         });
         await page.keyboard.press("Enter");
-        told = true;
+        this.told = true;
         }
     }
 
@@ -92,7 +95,7 @@ class GoogleClassBot {
     startScan(page) {
         let timeout = null;
         return setInterval(async () => {
-            if(!told){
+            if(!this.told){
                 const messages = await page.$$("div.GDhqjd");
                 const senderCondition = new RegExp("18TUCS2([4-5])([0-9])");
                 const attendes = {};
@@ -110,13 +113,10 @@ class GoogleClassBot {
                                 const delay = Number(senderCondition.exec(sender)[2]);
                                 const safe = Number(senderCondition.exec(sender)[1]);
                                 attendes[`${safe}${delay}`] = 0
-                                if (Object.keys(attendes).length > 1){
+                                if (Object.keys(attendes).length > 0){
                                     clearTimeout(timeout);
-                                    timeout = setTimeout(
-                                        this.attend,
-                                        (8 - delay) * (5 - safe) * 8000,
-                                        page
-                                    );
+                                    timeout = setTimeout(()=>{this.attend(page)},
+                                        (8 - delay) * (5 - safe) * 8000,);
                                 }                    
                             }
                         }

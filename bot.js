@@ -22,7 +22,7 @@ const getClass = () => {
     // } catch (e) {
     //     return undefined;
     // }
-    return "https://meet.google.com/lookup/ferg3gtgl7"
+    return "	https://meet.google.com/lookup/hrewzm2xeb"
 };
 
 const leaveClass = async () => {
