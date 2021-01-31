@@ -65,7 +65,7 @@ const attend = async()=>{
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [1,2,3,4,5,6];
 rule.hour = [9,10,11,12,13,14,15,16];
-rule.minute = 0;
+rule.minute = 5;
  
 let j = schedule.scheduleJob(rule,async()=>{
     await joinClass();
