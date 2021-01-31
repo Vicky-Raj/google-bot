@@ -54,4 +54,5 @@ app.post("/attend", async (req, res) => {
 });
 
 app.listen(8000, console.log("listening"));
-bot.joinClass();
+
+bot.joinClass()

@@ -2,11 +2,11 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
-
+let told = false;
 class GoogleClassBot {
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -18,10 +18,13 @@ class GoogleClassBot {
     }
 
     async attend(page) {
+        if(!told){
         await page.type("textarea[name=chatTextInput]", "248 present", {
             delay: 0,
         });
         await page.keyboard.press("Enter");
+        told = true;
+        }
     }
 
     async enterClass(browser, email, pass, url) {
@@ -87,28 +90,39 @@ class GoogleClassBot {
     }
 
     startScan(page) {
-        let told = false;
+        let timeout = null;
         return setInterval(async () => {
-            if (!told) {
-                let messages = await page.$$("div[data-message-text]");
-                const reg = new RegExp("[2]?([4-5])([0-9]) present", "i");
-                for (const message of messages) {
-                    const text = await page.evaluate(
-                        (el) => el.innerText,
+            if(!told){
+                const messages = await page.$$("div.GDhqjd");
+                const senderCondition = new RegExp("18TUCS2([4-5])([0-9])");
+                const attendes = {};
+                for(const message of messages){
+                    const sender = await page.evaluate(
+                        (el) => el.getAttribute("data-sender-name"),
                         message
                     );
-                    if (reg.test(text)) {
-                        const delay = Number(reg.exec(text)[2]);
-                        const safe = Number(reg.exec(text)[1]);
-                        setTimeout(
-                            this.attend,
-                            (8 - delay) * (5 - safe) * 8000,
-                            page
-                        );
-                        told = true;
+                    if(senderCondition.test(sender)){
+                        const textCondition1 = new RegExp("[2]?([4-5])([0-9]) present", "i");
+                        const textCondition2 = new RegExp("present","i");
+                        const texts = await message.$$eval("div.oIy2qc", els => els.map(el => el.innerText));
+                        for(const text of texts){
+                            if(textCondition1.test(text) || textCondition2.test(text)){  
+                                const delay = Number(senderCondition.exec(sender)[2]);
+                                const safe = Number(senderCondition.exec(sender)[1]);
+                                attendes[`${safe}${delay}`] = 0
+                                if (Object.keys(attendes).length > 1){
+                                    clearTimeout(timeout);
+                                    timeout = setTimeout(
+                                        this.attend,
+                                        (8 - delay) * (5 - safe) * 8000,
+                                        page
+                                    );
+                                }                    
+                            }
+                        }
                     }
-                }
             }
+        }
         }, 2000);
     }
 }
