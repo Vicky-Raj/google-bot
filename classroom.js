@@ -9,7 +9,7 @@ class GoogleClassBot {
     }
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -94,11 +94,11 @@ class GoogleClassBot {
 
     startScan(page) {
         let timeout = null;
+        const attendes = {};
         return setInterval(async () => {
             if(!this.told){
                 const messages = await page.$$("div.GDhqjd");
                 const senderCondition = new RegExp("18TUCS2([4-5])([0-9])");
-                const attendes = {};
                 for(const message of messages){
                     const sender = await page.evaluate(
                         (el) => el.getAttribute("data-sender-name"),
@@ -112,12 +112,15 @@ class GoogleClassBot {
                             if(textCondition1.test(text) || textCondition2.test(text)){  
                                 const delay = Number(senderCondition.exec(sender)[2]);
                                 const safe = Number(senderCondition.exec(sender)[1]);
-                                attendes[`${safe}${delay}`] = 0
-                                if (Object.keys(attendes).length > 0){
-                                    clearTimeout(timeout);
-                                    timeout = setTimeout(()=>{this.attend(page)},
-                                        (8 - delay) * (5 - safe) * 8000,);
-                                }                    
+                                const rollno = `${safe}${delay}`;
+                                if(!(rollno in attendes)){
+                                    attendes[rollno] = 0
+                                    if (Object.keys(attendes).length > 0){
+                                        clearTimeout(timeout);
+                                        timeout = setTimeout(()=>{this.attend(page)},
+                                            (8 - delay) * (5 - safe) * 8000);
+                                    }  
+                                }                  
                             }
                         }
                     }
