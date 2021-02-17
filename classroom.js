@@ -2,14 +2,13 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
-let told = false;
 class GoogleClassBot {
-    constructor(){
+    constructor() {
         this.told = false;
     }
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -21,13 +20,11 @@ class GoogleClassBot {
     }
 
     async attend(page) {
-        if(!this.told){
         await page.type("textarea[name=chatTextInput]", "248 present", {
             delay: 0,
         });
         await page.keyboard.press("Enter");
         this.told = true;
-        }
     }
 
     async enterClass(browser, email, pass, url) {
@@ -93,39 +90,31 @@ class GoogleClassBot {
     }
 
     startScan(page) {
-        let timeout = null;
-        const attendes = {};
         return setInterval(async () => {
-            if(!this.told){
+            if (!this.told) {
                 const messages = await page.$$("div.GDhqjd");
-                const senderCondition = new RegExp("18TUCS2([4-5])([0-9])");
-                for(const message of messages){
+                const senderCondition = new RegExp("18TUCS247");
+                for (const message of messages) {
                     const sender = await page.evaluate(
                         (el) => el.getAttribute("data-sender-name"),
                         message
                     );
-                    if(senderCondition.test(sender)){
-                        const textCondition1 = new RegExp("[2]?([4-5])([0-9]) present", "i");
-                        const textCondition2 = new RegExp("present","i");
-                        const texts = await message.$$eval("div.oIy2qc", els => els.map(el => el.innerText));
-                        for(const text of texts){
-                            if(textCondition1.test(text) || textCondition2.test(text)){  
-                                const delay = Number(senderCondition.exec(sender)[2]);
-                                const safe = Number(senderCondition.exec(sender)[1]);
-                                const rollno = `${safe}${delay}`;
-                                if(!(rollno in attendes)){
-                                    attendes[rollno] = 0
-                                    if (Object.keys(attendes).length > 0){
-                                        clearTimeout(timeout);
-                                        timeout = setTimeout(()=>{this.attend(page)},
-                                            (8 - delay) * (5 - safe) * 8000);
-                                    }  
-                                }                  
+                    if (senderCondition.test(sender)) {
+                        const textCondition1 = new RegExp("247 present", "i");
+                        const texts = await message.$$eval(
+                            "div.oIy2qc",
+                            (els) => els.map((el) => el.innerText)
+                        );
+                        for (const text of texts) {
+                            if (textCondition1.test(text)) {
+                                timeout = setTimeout(() => {
+                                    this.attend(page);
+                                }, 3000);
                             }
                         }
                     }
+                }
             }
-        }
         }, 2000);
     }
 }
