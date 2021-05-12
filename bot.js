@@ -22,8 +22,8 @@ const getClass = () => {
     // } catch (e) {
     //     return undefined;
     // }
-    return "https://meet.google.com/lookup/hy72cxeakr"
-};
+    return "https://meet.google.com/lookup/apskosbsib";
+}
 
 const leaveClass = async () => {
     if (!leaving) {
@@ -64,8 +64,8 @@ const attend = async()=>{
 
 let rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [1,2,3,4,5,6];
-rule.hour = [9,10,11,12,13,14,15,16];
-rule.minute = 3;
+rule.hour = [9,11,11,12,13,15,15,16];
+rule.minute = [30,0,15,45,30,0,15,45];
  
 let j = schedule.scheduleJob(rule,async()=>{
     await joinClass();

@@ -3,12 +3,9 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
 class GoogleClassBot {
-    constructor() {
-        this.told = false;
-    }
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -24,7 +21,6 @@ class GoogleClassBot {
             delay: 0,
         });
         await page.keyboard.press("Enter");
-        this.told = true;
     }
 
     async enterClass(browser, email, pass, url) {
@@ -90,8 +86,9 @@ class GoogleClassBot {
     }
 
     startScan(page) {
+        let told = false;
         return setInterval(async () => {
-            if (!this.told) {
+            if (!told) {
                 const messages = await page.$$("div.GDhqjd");
                 const senderCondition = new RegExp("18TUCS247");
                 for (const message of messages) {
@@ -107,9 +104,10 @@ class GoogleClassBot {
                         );
                         for (const text of texts) {
                             if (textCondition1.test(text)) {
-                                timeout = setTimeout(() => {
+                                setTimeout(() => {
                                     this.attend(page);
                                 }, 3000);
+                                told = true;
                             }
                         }
                     }
