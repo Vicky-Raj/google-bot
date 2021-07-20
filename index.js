@@ -17,6 +17,7 @@ app.get('/', function (req, res) {
 
 app.get("/data", (req, res) => {
     fs.readFile("data.json", (err, data) => {
+        console.log(JSON.parse(data));
         res.json(JSON.parse(data));
     });
 });
@@ -53,6 +54,6 @@ app.post("/attend", async (req, res) => {
     res.send();
 });
 
-app.listen(8000, console.log("listening"));
+app.listen(5000, console.log("listening"));
 
 bot.joinClass()

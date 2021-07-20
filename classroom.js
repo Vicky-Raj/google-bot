@@ -5,12 +5,12 @@ puppeteer.use(StealthPlugin());
 class GoogleClassBot {
     async createBrowser() {
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--use-fake-ui-for-media-stream",
-                "--disable-audio-output",
+                "--disable-notifications"
             ],
         });
         return browser;
@@ -65,23 +65,23 @@ class GoogleClassBot {
         await page.waitForTimeout(3000);
         console.log("clicking on join");
         await page.click("span.NPEfkd.RveJvd.snByac");
-        //NPEfkd RveJvd snByac"
-        await page.waitForTimeout(5000);
-        await page.keyboard.press("Enter");
-        await page.waitForTimeout(3000);
-        try {
-            await page.click("div.IYwVEf.HotEze.uB7U9e.nAZzG");
-        } catch (e) {
-            console.log("\naudio seems to disabled already");
-        }
-        await page.waitForTimeout(3000);
-        try {
-            await page.click("div.IYwVEf.HotEze.nAZzG");
-        } catch (e) {
-            console.log("\nvideo seems to be disabled already");
-        }
-        await page.waitForTimeout(3000);
-        await page.click("span.DPvwYc.sm8sCf.KdraA");
+        // //NPEfkd RveJvd snByac"
+        // await page.waitForTimeout(5000);
+        // await page.keyboard.press("Enter");
+        // await page.waitForTimeout(3000);
+        // try {
+        //     await page.click("div.IYwVEf.HotEze.uB7U9e.nAZzG");
+        // } catch (e) {
+        //     console.log("\naudio seems to disabled already");
+        // }
+        // await page.waitForTimeout(3000);
+        // try {
+        //     await page.click("div.IYwVEf.HotEze.nAZzG");
+        // } catch (e) {
+        //     console.log("\nvideo seems to be disabled already");
+        // }
+        // await page.waitForTimeout(3000);
+        // await page.click("span.DPvwYc.sm8sCf.KdraA");
         return page;
     }
 
